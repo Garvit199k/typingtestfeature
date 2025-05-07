@@ -88,8 +88,21 @@ tryAgainBtn.addEventListener('click', () => {
 
 window.addEventListener('load', () => {
     displayTextForDifficulty(difficultySelect.value);
-    setTheme(themeSelect.value);
+    const savedTheme = localStorage.getItem('selectedTheme') || themeSelect.value;
+    setTheme(savedTheme);
+    themeSelect.value = savedTheme;
     checkUserLoggedIn();
+});
+
+const logoutButton = document.getElementById('logout-button');
+logoutButton.addEventListener('click', () => {
+    localStorage.removeItem('currentUser');
+    user = null;
+    showAuthSection();
+    authMessage.textContent = 'Logged out successfully.';
+    inputArea.disabled = true;
+    startTestBtn.style.display = 'inline-block';
+    pauseTestBtn.style.display = 'none';
 });
 
 function startTest() {
