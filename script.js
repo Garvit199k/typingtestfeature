@@ -27,15 +27,46 @@ let isLoginMode = true;
 const beepSound = new Audio('beep.mp3');
 const victorySound = new Audio('victory.mp3');
 
-// Utility function to generate random text from API
+// Unlock audio playback on first user interaction
+function unlockAudio() {
+    beepSound.play().then(() => {
+        beepSound.pause();
+        beepSound.currentTime = 0;
+    }).catch(() => {});
+    victorySound.play().then(() => {
+        victorySound.pause();
+        victorySound.currentTime = 0;
+    }).catch(() => {});
+    window.removeEventListener('click', unlockAudio);
+    window.removeEventListener('keydown', unlockAudio);
+}
+
+window.addEventListener('click', unlockAudio);
+window.addEventListener('keydown', unlockAudio);
+
+const fallbackWords = {
+    easy: ['cat', 'dog', 'sun', 'tree', 'book', 'car', 'pen', 'cup', 'hat', 'ball'],
+    medium: ['computer', 'javascript', 'keyboard', 'monitor', 'internet', 'function', 'variable', 'object', 'array', 'string'],
+    hard: ['asynchronous', 'polymorphism', 'encapsulation', 'inheritance', 'abstraction', 'algorithm', 'optimization', 'synchronization', 'multithreading', 'recursion']
+};
+
+// Utility function to generate random text from API with fallback
 async function generateRandomText(difficulty) {
     try {
         const response = await fetch(`/api/random-text?difficulty=${difficulty}`);
+        if (!response.ok) throw new Error('API response not ok');
         const data = await response.json();
         return data.text;
     } catch (error) {
-        console.error('Error fetching random text:', error);
-        return '';
+        console.error('Error fetching random text, using fallback:', error);
+        // Generate fallback text
+        const wordList = fallbackWords[difficulty] || fallbackWords.medium;
+        let text = '';
+        for (let i = 0; i < 50; i++) {
+            const word = wordList[Math.floor(Math.random() * wordList.length)];
+            text += word + (i === 49 ? '' : ' ');
+        }
+        return text;
     }
 }
 
@@ -180,8 +211,19 @@ function endTest() {
 }
 
 function highlightText() {
-    // Simple highlight logic: could be improved
-    // For now, no changes to text highlighting
+    const wordSpans = testTextDiv.querySelectorAll('span.word');
+    const inputWords = inputArea.value.trim().split(/\s+/);
+    for (let i = 0; i < wordSpans.length; i++) {
+        if (inputWords[i] == null) {
+            wordSpans[i].classList.remove('correct', 'incorrect');
+        } else if (inputWords[i] === wordSpans[i].textContent) {
+            wordSpans[i].classList.add('correct');
+            wordSpans[i].classList.remove('incorrect');
+        } else {
+            wordSpans[i].classList.add('incorrect');
+            wordSpans[i].classList.remove('correct');
+        }
+    }
 }
 
 inputArea.addEventListener('input', () => {
