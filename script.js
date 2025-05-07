@@ -248,6 +248,9 @@ inputArea.addEventListener('input', () => {
             }
         }
     }
+    // Update WPM live
+    const wpm = calculateWPM();
+    wpmDisplay.textContent = `WPM: ${wpm}`;
 });
 
 function calculateWPM() {
