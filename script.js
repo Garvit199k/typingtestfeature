@@ -247,6 +247,11 @@ authForm.addEventListener('submit', (e) => {
     }
 
     let users = JSON.parse(localStorage.getItem('users') || '[]');
+    if (!Array.isArray(users)) {
+        console.warn('Users data in localStorage is not an array. Resetting to empty array.');
+        users = [];
+        localStorage.setItem('users', JSON.stringify(users));
+    }
     console.log('Users loaded:', users);
 
     if (isLoginMode) {
