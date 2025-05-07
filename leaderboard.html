@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Typing Test - Leaderboard</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="container leaderboard-container">
+        <header>
+            <h1>Leaderboard</h1>
+        </header>
+        <main>
+            <ol id="leaderboard-list"></ol>
+            <button id="back-button">Back</button>
+        </main>
+        <footer>
+            <p>Developed by Garvit and Karan</p>
+        </footer>
+    </div>
+    <script>
+        const leaderboardList = document.getElementById('leaderboard-list');
+        const backButton = document.getElementById('back-button');
+
+        function loadLeaderboard() {
+            let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+            leaderboardList.innerHTML = '';
+            leaderboard.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = `${entry.username} - ${entry.wpm} WPM`;
+                leaderboardList.appendChild(li);
+            });
+        }
+
+        backButton.addEventListener('click', () => {
+            window.location.href = 'index.html';
+        });
+
+        loadLeaderboard();
+    </script>
+</body>
+</html>

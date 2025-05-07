@@ -47,7 +47,7 @@
                         </select>
                     </div>
                     <button id="start-test">Start Test</button>
-                    <button id="pause-test" class="hidden">Pause</button>
+                    <button id="pause-test" style="display:none;">Pause</button>
                 </div>
                 <div id="test-text" class="test-text"></div>
                 <textarea id="input-area" placeholder="Start typing here..." disabled></textarea>
@@ -56,10 +56,12 @@
                     <div id="wpm-display">WPM: 0</div>
                     <button id="try-again" class="hidden">Try Again</button>
                 </div>
-                <section id="leaderboard-section">
+                <!-- Removed inline leaderboard section -->
+                <section id="leaderboard-section" class="hidden">
                     <h2>Leaderboard</h2>
                     <ol id="leaderboard-list"></ol>
                 </section>
+                <button id="leaderboard-button">Leaderboard</button>
             </section>
         </main>
         <footer>

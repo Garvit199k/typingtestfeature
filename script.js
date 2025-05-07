@@ -112,10 +112,12 @@ function calculateWPM() {
     return Math.round(wordsTyped / elapsedMinutes) || 0;
 }
 
+let beepPlayed = false;
 function highlightText() {
     const input = inputArea.value;
     let html = '';
     errors = 0;
+    let errorFound = false;
     for (let i = 0; i < currentText.length; i++) {
         const char = currentText[i];
         const typedChar = input[i];
@@ -126,11 +128,17 @@ function highlightText() {
         } else {
             html += `<span class="incorrect">${char}</span>`;
             errors++;
+            errorFound = true;
         }
     }
     testTextDiv.innerHTML = html;
-    if (errors > 0) {
-        beepSound.play();
+    if (errorFound) {
+        if (!beepPlayed) {
+            beepSound.play();
+            beepPlayed = true;
+        }
+    } else {
+        beepPlayed = false;
     }
 }
 
@@ -147,6 +155,8 @@ async function startTest() {
     tryAgainBtn.classList.add('hidden');
     testStarted = true;
     startTime = Date.now();
+    beepPlayed = false;
+    pauseTestBtn.style.display = 'inline-block';
 
     if (intervalId) clearInterval(intervalId);
     intervalId = setInterval(() => {
@@ -187,6 +197,11 @@ function loadLeaderboard() {
         leaderboardList.appendChild(li);
     });
 }
+
+const leaderboardButton = document.getElementById('leaderboard-button');
+leaderboardButton.addEventListener('click', () => {
+    window.location.href = 'leaderboard.html';
+});
 
 function tryAgain() {
     startTest();
@@ -264,6 +279,8 @@ function pauseTest() {
             wpmDisplay.textContent = `WPM: ${calculateWPM()}`;
         }, 1000);
     }
+    // Show or hide pause button based on test state
+    pauseTestBtn.style.display = testStarted ? 'inline-block' : 'none';
 }
 
 function loginUser(username, password) {
