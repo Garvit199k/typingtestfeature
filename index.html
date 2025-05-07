@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Typing Test - Login</title>
+    <title>Typing Test - Login & Test</title>
     <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
@@ -13,26 +13,28 @@
         </header>
         <main>
             <section id="auth-section">
-                <div class="tabs">
-                    <button id="login-tab" class="active">Login</button>
-                    <button id="register-tab">Register</button>
+                <div class="tabs" role="tablist">
+                    <button id="login-tab" class="active" role="tab" aria-selected="true" aria-controls="login-panel" tabindex="0">Login</button>
+                    <button id="register-tab" role="tab" aria-selected="false" aria-controls="register-panel" tabindex="-1">Register</button>
                 </div>
-                <form id="auth-form">
-                    <input type="text" id="username" placeholder="Username" required />
-                    <input type="password" id="password" placeholder="Password" required />
+                <form id="auth-form" aria-live="polite" aria-atomic="true">
+                    <input type="text" id="username" name="username" placeholder="Username" autocomplete="username" required aria-required="true" />
+                    <input type="password" id="password" name="password" placeholder="Password" autocomplete="current-password" required aria-required="true" />
                     <select id="theme-select" aria-label="Select Theme">
                         <option value="male-professional">Male Professional</option>
                         <option value="female-kawaii">Female Kawaii</option>
+                        <option value="dark-mode">Dark Mode</option>
                     </select>
                     <button type="submit" id="auth-submit">Login</button>
                 </form>
-                <div id="auth-message" role="alert"></div>
+                <div id="auth-message" role="alert" aria-live="assertive"></div>
             </section>
-            <section id="typing-test-section" class="hidden">
+
+            <section id="typing-test-section" class="hidden" aria-live="polite" aria-atomic="true">
                 <div class="test-header">
                     <div>
                         <label for="difficulty">Difficulty:</label>
-                        <select id="difficulty">
+                        <select id="difficulty" aria-label="Select Difficulty">
                             <option value="easy">Easy</option>
                             <option value="medium" selected>Medium</option>
                             <option value="hard">Hard</option>
@@ -40,26 +42,26 @@
                     </div>
                     <div>
                         <label for="timer">Timer:</label>
-                        <select id="timer">
+                        <select id="timer" aria-label="Select Timer">
                             <option value="30">30 seconds</option>
                             <option value="60" selected>1 minute</option>
                             <option value="120">2 minutes</option>
                         </select>
                     </div>
                     <button id="start-test">Start Test</button>
-                    <button id="pause-test" style="display:none;">Pause</button>
+                    <button id="pause-test" class="hidden">Pause</button>
                     <button id="logout-button">Logout</button>
                 </div>
-                <div id="test-text" class="test-text"></div>
-                <textarea id="input-area" placeholder="Start typing here..." disabled></textarea>
+                <div id="test-text" class="test-text" aria-label="Typing test text"></div>
+                <textarea id="input-area" placeholder="Start typing here..." disabled aria-label="Typing input area"></textarea>
                 <div class="test-footer">
-                    <div id="timer-display">Time: 0</div>
-                    <div id="wpm-display">WPM: 0</div>
+                    <div id="timer-display" aria-live="polite" aria-atomic="true">Time: 0s</div>
+                    <div id="wpm-display" aria-live="polite" aria-atomic="true">WPM: 0</div>
                     <button id="try-again" class="hidden">Try Again</button>
                 </div>
-                <div id="message-area" class="message-area"></div>
-                <!-- Removed inline leaderboard section -->
-                <section id="leaderboard-section" class="hidden">
+                <div id="message-area" class="message-area" aria-live="assertive"></div>
+
+                <section id="leaderboard-section" class="hidden" aria-label="Leaderboard section">
                     <h2>Leaderboard</h2>
                     <ol id="leaderboard-list"></ol>
                     <button id="back-button">Back</button>

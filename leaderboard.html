@@ -12,8 +12,8 @@
             <h1>Leaderboard</h1>
         </header>
         <main>
-            <ol id="leaderboard-list"></ol>
-            <button id="back-button">Back</button>
+            <ol id="leaderboard-list" aria-live="polite" aria-atomic="true"></ol>
+            <button id="back-button" aria-label="Back to Typing Test">Back</button>
         </main>
         <footer>
             <p>Developed by Garvit and Karan</p>
@@ -26,9 +26,19 @@
         function loadLeaderboard() {
             let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
             leaderboardList.innerHTML = '';
-            leaderboard.forEach(entry => {
+            if (leaderboard.length === 0) {
                 const li = document.createElement('li');
-                li.textContent = `${entry.username} - ${entry.wpm} WPM`;
+                li.textContent = 'No scores yet.';
+                leaderboardList.appendChild(li);
+                return;
+            }
+            leaderboard.forEach((entry, index) => {
+                const li = document.createElement('li');
+                let medal = '';
+                if (index === 0) medal = '🥇 ';
+                else if (index === 1) medal = '🥈 ';
+                else if (index === 2) medal = '🥉 ';
+                li.textContent = `${medal}${entry.username} - ${entry.wpm} WPM`;
                 leaderboardList.appendChild(li);
             });
         }

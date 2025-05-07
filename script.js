@@ -44,13 +44,6 @@ function unlockAudio() {
 window.addEventListener('click', unlockAudio);
 window.addEventListener('keydown', unlockAudio);
 
-const fallbackWords = {
-    easy: ['cat', 'dog', 'sun', 'tree', 'book', 'car', 'pen', 'cup', 'hat', 'ball'],
-    medium: ['computer', 'javascript', 'keyboard', 'monitor', 'internet', 'function', 'variable', 'object', 'array', 'string'],
-    hard: ['asynchronous', 'polymorphism', 'encapsulation', 'inheritance', 'abstraction', 'algorithm', 'optimization', 'synchronization', 'multithreading', 'recursion']
-};
-
-// Utility function to generate random text from API with fallback
 async function generateRandomText(difficulty) {
     try {
         const response = await fetch(`/api/random-text?difficulty=${difficulty}`);
@@ -58,8 +51,13 @@ async function generateRandomText(difficulty) {
         const data = await response.json();
         return data.text;
     } catch (error) {
-        console.error('Error fetching random text, using fallback:', error);
-        // Generate fallback text
+        console.error('Error fetching random text:', error);
+        // Fallback text
+        const fallbackWords = {
+            easy: ['cat', 'dog', 'sun', 'tree', 'book', 'car', 'pen', 'cup', 'hat', 'ball'],
+            medium: ['computer', 'javascript', 'keyboard', 'monitor', 'internet', 'function', 'variable', 'object', 'array', 'string'],
+            hard: ['asynchronous', 'polymorphism', 'encapsulation', 'inheritance', 'abstraction', 'algorithm', 'optimization', 'synchronization', 'multithreading', 'recursion']
+        };
         const wordList = fallbackWords[difficulty] || fallbackWords.medium;
         let text = '';
         for (let i = 0; i < 50; i++) {
@@ -72,7 +70,6 @@ async function generateRandomText(difficulty) {
 
 async function displayTextForDifficulty(difficulty) {
     currentText = await generateRandomText(difficulty);
-    // Split currentText into words wrapped in spans for highlighting
     const words = currentText.split(' ');
     testTextDiv.innerHTML = words.map(word => `<span class="word">${word}</span>`).join(' ');
     inputArea.value = '';
@@ -84,7 +81,7 @@ async function displayTextForDifficulty(difficulty) {
     testStarted = false;
     errors = 0;
     timeLeft = parseInt(document.getElementById('timer').value, 10);
-    pauseTestBtn.style.display = 'none';
+    pauseTestBtn.classList.add('hidden');
 }
 
 difficultySelect.addEventListener('change', async (e) => {
@@ -111,7 +108,7 @@ pauseTestBtn.addEventListener('click', () => {
     if (testStarted) {
         clearInterval(intervalId);
         testStarted = false;
-        pauseTestBtn.style.display = 'none';
+        pauseTestBtn.classList.add('hidden');
         startTestBtn.style.display = 'inline-block';
         messageArea.textContent = 'Test paused.';
     }
@@ -123,8 +120,6 @@ tryAgainBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('load', () => {
-    // Clear currentUser on page load to force login each time
-    // Comment out the next line if persistent login is desired
     localStorage.removeItem('currentUser');
     user = null;
     showAuthSection();
@@ -133,25 +128,23 @@ window.addEventListener('load', () => {
     const savedTheme = localStorage.getItem('selectedTheme') || themeSelect.value;
     setTheme(savedTheme);
     themeSelect.value = savedTheme;
-    // checkUserLoggedIn(); // Disabled to force login on each load
 
-    // Leaderboard toggle button event listener
-    const leaderboardButton = document.getElementById('leaderboard-button');
-    const leaderboardSection = document.getElementById('leaderboard-section');
-    const backButton = document.getElementById('back-button');
+const leaderboardButton = document.getElementById('leaderboard-button');
+const leaderboardSection = document.getElementById('leaderboard-section');
+const backButton = document.getElementById('back-button');
 
-    if (leaderboardButton && leaderboardSection && backButton) {
-        leaderboardButton.addEventListener('click', () => {
-            leaderboardSection.classList.remove('hidden');
-            document.getElementById('typing-test-section').classList.add('hidden');
-            loadLeaderboard();
-        });
+if (leaderboardButton && leaderboardSection && backButton) {
+    leaderboardButton.addEventListener('click', () => {
+        loadLeaderboard();
+        leaderboardSection.classList.remove('hidden');
+        document.getElementById('typing-test-section').classList.add('hidden');
+    });
 
-        backButton.addEventListener('click', () => {
-            leaderboardSection.classList.add('hidden');
-            document.getElementById('typing-test-section').classList.remove('hidden');
-        });
-    }
+    backButton.addEventListener('click', () => {
+        leaderboardSection.classList.add('hidden');
+        document.getElementById('typing-test-section').classList.remove('hidden');
+    });
+}
 });
 
 const logoutButton = document.getElementById('logout-button');
@@ -162,7 +155,7 @@ logoutButton.addEventListener('click', () => {
     authMessage.textContent = 'Logged out successfully.';
     inputArea.disabled = true;
     startTestBtn.style.display = 'inline-block';
-    pauseTestBtn.style.display = 'none';
+    pauseTestBtn.classList.add('hidden');
 });
 
 function startTest() {
@@ -174,7 +167,7 @@ function startTest() {
     inputArea.disabled = false;
     inputArea.focus();
     startTestBtn.style.display = 'none';
-    pauseTestBtn.style.display = 'inline-block';
+    pauseTestBtn.classList.remove('hidden');
     timeLeft = parseInt(document.getElementById('timer').value, 10);
     timerDisplay.textContent = `Time: ${timeLeft}s`;
     errors = 0;
@@ -207,7 +200,7 @@ function endTest() {
     saveScore(user.username, wpm);
     loadLeaderboard();
     startTestBtn.style.display = 'inline-block';
-    pauseTestBtn.style.display = 'none';
+    pauseTestBtn.classList.add('hidden');
 }
 
 function highlightText() {
@@ -228,16 +221,21 @@ function highlightText() {
 
 inputArea.addEventListener('input', () => {
     if (!testStarted) return;
-    const inputWords = inputArea.value.trim().split(/\s+/);
+    const inputWords = inputArea.value.split(/\s+/);
     const wordSpans = testTextDiv.querySelectorAll('span.word');
     errors = 0;
     let playedBeep = false;
     for (let i = 0; i < wordSpans.length; i++) {
-        if (inputWords[i] == null) {
+        const currentWord = wordSpans[i].textContent;
+        const typedWord = inputWords[i] || '';
+        if (typedWord.length === 0) {
             wordSpans[i].classList.remove('correct', 'incorrect');
-        } else if (inputWords[i] === wordSpans[i].textContent) {
+        } else if (typedWord === currentWord) {
             wordSpans[i].classList.add('correct');
             wordSpans[i].classList.remove('incorrect');
+        } else if (currentWord.startsWith(typedWord)) {
+            // Partial correct word (typing in progress)
+            wordSpans[i].classList.remove('correct', 'incorrect');
         } else {
             wordSpans[i].classList.add('incorrect');
             wordSpans[i].classList.remove('correct');
@@ -248,7 +246,6 @@ inputArea.addEventListener('input', () => {
             }
         }
     }
-    // Update WPM live
     const wpm = calculateWPM();
     wpmDisplay.textContent = `WPM: ${wpm}`;
 });
@@ -262,7 +259,6 @@ function calculateWPM() {
 function saveScore(username, wpm) {
     if (!username || !wpm) return;
     let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
-    // Remove existing entry for the user if any
     leaderboard = leaderboard.filter(entry => entry.username !== username);
     leaderboard.push({ username, wpm });
     leaderboard.sort((a, b) => b.wpm - a.wpm);
@@ -278,59 +274,35 @@ function loadLeaderboard() {
     if (leaderboard.length === 0) {
         const li = document.createElement('li');
         li.textContent = 'No scores yet.';
-        li.classList.add('leaderboard-entry');
         leaderboardList.appendChild(li);
         return;
     }
-    leaderboard.forEach(entry => {
+    leaderboard.forEach((entry, index) => {
         const li = document.createElement('li');
-        li.textContent = `${entry.username} - ${entry.wpm} WPM`;
-        li.classList.add('leaderboard-entry');
+        let medal = '';
+        if (index === 0) medal = '🥇 ';
+        else if (index === 1) medal = '🥈 ';
+        else if (index === 2) medal = '🥉 ';
+        li.textContent = `${medal}${entry.username} - ${entry.wpm} WPM`;
         leaderboardList.appendChild(li);
     });
 }
 
 function setTheme(theme) {
-    document.body.classList.remove('theme-male-professional', 'theme-female-kawaii');
+    document.body.classList.remove('theme-male-professional', 'theme-female-kawaii', 'theme-dark-mode');
     if (theme === 'male-professional') {
         document.body.classList.add('theme-male-professional');
     } else if (theme === 'female-kawaii') {
         document.body.classList.add('theme-female-kawaii');
+    } else if (theme === 'dark-mode') {
+        document.body.classList.add('theme-dark-mode');
     }
     localStorage.setItem('selectedTheme', theme);
 }
 
 themeSelect.addEventListener('change', (e) => {
     setTheme(e.target.value);
-    triggerShineEffect(e.target.value);
 });
-
-function triggerShineEffect(theme) {
-    const body = document.body;
-    // Remove existing shine class to restart animation
-    body.classList.remove('shine');
-    void body.offsetWidth; // trigger reflow to restart animation
-
-    if (theme === 'male-professional') {
-        body.classList.add('theme-male-professional', 'shine');
-        body.classList.remove('theme-female-kawaii');
-    } else if (theme === 'female-kawaii') {
-        body.classList.add('theme-female-kawaii', 'shine');
-        body.classList.remove('theme-male-professional');
-    } else {
-        body.classList.remove('theme-male-professional', 'theme-female-kawaii', 'shine');
-    }
-}
-
-function checkUserLoggedIn() {
-    const storedUser = localStorage.getItem('currentUser');
-    if (storedUser) {
-        user = JSON.parse(storedUser);
-        showTypingTestSection();
-    } else {
-        showAuthSection();
-    }
-}
 
 function showTypingTestSection() {
     document.getElementById('auth-section').classList.add('hidden');
@@ -364,50 +336,40 @@ registerTab.addEventListener('click', () => switchMode(false));
 
 authForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    console.log('Auth form submitted');
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
 
     if (!username || !password) {
         authMessage.textContent = 'Please enter username and password.';
-        console.log('Missing username or password');
         return;
     }
 
     let users = JSON.parse(localStorage.getItem('users') || '[]');
     if (!Array.isArray(users)) {
-        console.warn('Users data in localStorage is not an array. Resetting to empty array.');
         users = [];
         localStorage.setItem('users', JSON.stringify(users));
     }
-    console.log('Users loaded:', users);
 
     if (isLoginMode) {
-        // Login logic
         const existingUser = users.find(u => u.username === username && u.password === password);
         if (existingUser) {
             user = existingUser;
             localStorage.setItem('currentUser', JSON.stringify(user));
             authMessage.textContent = '';
-            console.log('Login successful for user:', username);
             showTypingTestSection();
         } else {
             authMessage.textContent = 'Invalid username or password.';
-            console.log('Invalid login attempt for user:', username);
         }
     } else {
-        // Registration logic
         const userExists = users.some(u => u.username === username);
         if (userExists) {
             authMessage.textContent = 'Username already exists.';
-            console.log('Registration failed: username exists:', username);
             return;
         }
         const newUser = { username, password };
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
         authMessage.textContent = 'Registration successful. Please login.';
-        console.log('Registration successful for user:', username);
         switchMode(true);
     }
 });
