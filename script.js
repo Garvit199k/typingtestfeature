@@ -24,6 +24,9 @@ let errors = 0;
 let user = null;
 let isLoginMode = true;
 
+const beepSound = new Audio('beep.mp3');
+const victorySound = new Audio('victory.mp3');
+
 // Utility function to generate random text from API
 async function generateRandomText(difficulty) {
     try {
@@ -38,7 +41,9 @@ async function generateRandomText(difficulty) {
 
 async function displayTextForDifficulty(difficulty) {
     currentText = await generateRandomText(difficulty);
-    testTextDiv.textContent = currentText;
+    // Split currentText into words wrapped in spans for highlighting
+    const words = currentText.split(' ');
+    testTextDiv.innerHTML = words.map(word => `<span class="word">${word}</span>`).join(' ');
     inputArea.value = '';
     inputArea.disabled = true;
     wpmDisplay.textContent = 'WPM: 0';
@@ -136,6 +141,7 @@ function endTest() {
     const wpm = calculateWPM();
     wpmDisplay.textContent = `WPM: ${wpm}`;
     if (errors === 0) {
+        victorySound.play();
         messageArea.textContent = '🎉 Congratulations! Perfect typing! 🎉';
         messageArea.style.color = '#28a745';
     } else {
@@ -153,6 +159,26 @@ function highlightText() {
     // Simple highlight logic: could be improved
     // For now, no changes to text highlighting
 }
+
+inputArea.addEventListener('input', () => {
+    if (!testStarted) return;
+    const inputWords = inputArea.value.trim().split(/\s+/);
+    const wordSpans = testTextDiv.querySelectorAll('span.word');
+    errors = 0;
+    for (let i = 0; i < wordSpans.length; i++) {
+        if (inputWords[i] == null) {
+            wordSpans[i].classList.remove('correct', 'incorrect');
+        } else if (inputWords[i] === wordSpans[i].textContent) {
+            wordSpans[i].classList.add('correct');
+            wordSpans[i].classList.remove('incorrect');
+        } else {
+            wordSpans[i].classList.add('incorrect');
+            wordSpans[i].classList.remove('correct');
+            errors++;
+            beepSound.play();
+        }
+    }
+});
 
 function calculateWPM() {
     const wordsTyped = inputArea.value.trim().split(/\s+/).length;
@@ -176,6 +202,7 @@ function loadLeaderboard() {
     leaderboard.forEach(entry => {
         const li = document.createElement('li');
         li.textContent = `${entry.username} - ${entry.wpm} WPM`;
+        li.classList.add('leaderboard-entry');
         leaderboardList.appendChild(li);
     });
 }
@@ -192,7 +219,25 @@ function setTheme(theme) {
 
 themeSelect.addEventListener('change', (e) => {
     setTheme(e.target.value);
+    triggerShineEffect(e.target.value);
 });
+
+function triggerShineEffect(theme) {
+    const body = document.body;
+    // Remove existing shine class to restart animation
+    body.classList.remove('shine');
+    void body.offsetWidth; // trigger reflow to restart animation
+
+    if (theme === 'male-professional') {
+        body.classList.add('theme-male-professional', 'shine');
+        body.classList.remove('theme-female-kawaii');
+    } else if (theme === 'female-kawaii') {
+        body.classList.add('theme-female-kawaii', 'shine');
+        body.classList.remove('theme-male-professional');
+    } else {
+        body.classList.remove('theme-male-professional', 'theme-female-kawaii', 'shine');
+    }
+}
 
 function checkUserLoggedIn() {
     const storedUser = localStorage.getItem('currentUser');

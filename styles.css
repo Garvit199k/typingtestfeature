@@ -208,22 +208,59 @@ button[type="submit"]:active,
 body.theme-male-professional {
     background-color: #e9f0f7;
     color: #222;
+    position: relative;
+    overflow: hidden;
+}
+
+body.theme-male-professional::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(120deg, rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.3) 50%, rgba(255,255,255,0.15) 100%);
+    transform: rotate(25deg);
+    animation: shine 5s linear infinite;
+    pointer-events: none;
+    z-index: 0;
 }
 
 body.theme-male-professional .container {
     box-shadow: 0 4px 20px rgba(0, 0, 50, 0.15);
+    position: relative;
+    z-index: 1;
 }
 
 body.theme-male-professional button[type="submit"],
 body.theme-male-professional #start-test,
 body.theme-male-professional #try-again {
     background-color: #004080;
+    position: relative;
+    z-index: 1;
 }
 
 body.theme-male-professional button[type="submit"]:hover,
 body.theme-male-professional #start-test:hover,
 body.theme-male-professional #try-again:hover {
     background-color: #00264d;
+}
+
+body.theme-male-professional.shine::before {
+    animation-play-state: running;
+}
+
+body.theme-male-professional::before {
+    animation-play-state: paused;
+}
+
+@keyframes shine {
+    0% {
+        transform: translateX(-100%) rotate(25deg);
+    }
+    100% {
+        transform: translateX(100%) rotate(25deg);
+    }
 }
 
 body.theme-female-kawaii {
