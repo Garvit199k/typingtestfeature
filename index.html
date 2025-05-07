@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Typing Test - Login</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Typing Test</h1>
+        </header>
+        <main>
+            <section id="auth-section">
+                <div class="tabs">
+                    <button id="login-tab" class="active">Login</button>
+                    <button id="register-tab">Register</button>
+                </div>
+                <form id="auth-form">
+                    <input type="text" id="username" placeholder="Username" required />
+                    <input type="password" id="password" placeholder="Password" required />
+                    <select id="theme-select" aria-label="Select Theme">
+                        <option value="male-professional">Male Professional</option>
+                        <option value="female-kawaii">Female Kawaii</option>
+                    </select>
+                    <button type="submit" id="auth-submit">Login</button>
+                </form>
+                <div id="auth-message" role="alert"></div>
+            </section>
+            <section id="typing-test-section" class="hidden">
+                <div class="test-header">
+                    <div>
+                        <label for="difficulty">Difficulty:</label>
+                        <select id="difficulty">
+                            <option value="easy">Easy</option>
+                            <option value="medium" selected>Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="timer">Timer:</label>
+                        <select id="timer">
+                            <option value="30">30 seconds</option>
+                            <option value="60" selected>1 minute</option>
+                            <option value="120">2 minutes</option>
+                        </select>
+                    </div>
+                    <button id="start-test">Start Test</button>
+                </div>
+                <div id="test-text" class="test-text"></div>
+                <textarea id="input-area" placeholder="Start typing here..." disabled></textarea>
+                <div class="test-footer">
+                    <div id="timer-display">Time: 0</div>
+                    <div id="wpm-display">WPM: 0</div>
+                    <button id="try-again" class="hidden">Try Again</button>
+                </div>
+                <section id="leaderboard-section">
+                    <h2>Leaderboard</h2>
+                    <ol id="leaderboard-list"></ol>
+                </section>
+            </section>
+        </main>
+        <footer>
+            <p>Developed by Garvit and Karan</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
