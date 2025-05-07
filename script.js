@@ -92,11 +92,17 @@ tryAgainBtn.addEventListener('click', () => {
 });
 
 window.addEventListener('load', () => {
+    // Clear currentUser on page load to force login each time
+    // Comment out the next line if persistent login is desired
+    localStorage.removeItem('currentUser');
+    user = null;
+    showAuthSection();
+
     displayTextForDifficulty(difficultySelect.value);
     const savedTheme = localStorage.getItem('selectedTheme') || themeSelect.value;
     setTheme(savedTheme);
     themeSelect.value = savedTheme;
-    checkUserLoggedIn();
+    // checkUserLoggedIn(); // Disabled to force login on each load
 });
 
 const logoutButton = document.getElementById('logout-button');
