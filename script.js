@@ -103,6 +103,24 @@ window.addEventListener('load', () => {
     setTheme(savedTheme);
     themeSelect.value = savedTheme;
     // checkUserLoggedIn(); // Disabled to force login on each load
+
+    // Leaderboard toggle button event listener
+    const leaderboardButton = document.getElementById('leaderboard-button');
+    const leaderboardSection = document.getElementById('leaderboard-section');
+    const backButton = document.getElementById('back-button');
+
+    if (leaderboardButton && leaderboardSection && backButton) {
+        leaderboardButton.addEventListener('click', () => {
+            leaderboardSection.classList.remove('hidden');
+            document.getElementById('typing-test-section').classList.add('hidden');
+            loadLeaderboard();
+        });
+
+        backButton.addEventListener('click', () => {
+            leaderboardSection.classList.add('hidden');
+            document.getElementById('typing-test-section').classList.remove('hidden');
+        });
+    }
 });
 
 const logoutButton = document.getElementById('logout-button');
