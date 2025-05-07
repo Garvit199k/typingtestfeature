@@ -171,6 +171,7 @@ inputArea.addEventListener('input', () => {
     const inputWords = inputArea.value.trim().split(/\s+/);
     const wordSpans = testTextDiv.querySelectorAll('span.word');
     errors = 0;
+    let playedBeep = false;
     for (let i = 0; i < wordSpans.length; i++) {
         if (inputWords[i] == null) {
             wordSpans[i].classList.remove('correct', 'incorrect');
@@ -181,7 +182,10 @@ inputArea.addEventListener('input', () => {
             wordSpans[i].classList.add('incorrect');
             wordSpans[i].classList.remove('correct');
             errors++;
-            beepSound.play();
+            if (!playedBeep) {
+                beepSound.play();
+                playedBeep = true;
+            }
         }
     }
 });
@@ -193,7 +197,10 @@ function calculateWPM() {
 }
 
 function saveScore(username, wpm) {
+    if (!username || !wpm) return;
     let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
+    // Remove existing entry for the user if any
+    leaderboard = leaderboard.filter(entry => entry.username !== username);
     leaderboard.push({ username, wpm });
     leaderboard.sort((a, b) => b.wpm - a.wpm);
     leaderboard = leaderboard.slice(0, 10);
@@ -205,6 +212,13 @@ function loadLeaderboard() {
     if (!leaderboardList) return;
     let leaderboard = JSON.parse(localStorage.getItem('leaderboard') || '[]');
     leaderboardList.innerHTML = '';
+    if (leaderboard.length === 0) {
+        const li = document.createElement('li');
+        li.textContent = 'No scores yet.';
+        li.classList.add('leaderboard-entry');
+        leaderboardList.appendChild(li);
+        return;
+    }
     leaderboard.forEach(entry => {
         const li = document.createElement('li');
         li.textContent = `${entry.username} - ${entry.wpm} WPM`;
