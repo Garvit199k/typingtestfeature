@@ -236,15 +236,18 @@ registerTab.addEventListener('click', () => switchMode(false));
 
 authForm.addEventListener('submit', (e) => {
     e.preventDefault();
+    console.log('Auth form submitted');
     const username = document.getElementById('username').value.trim();
     const password = document.getElementById('password').value.trim();
 
     if (!username || !password) {
         authMessage.textContent = 'Please enter username and password.';
+        console.log('Missing username or password');
         return;
     }
 
     let users = JSON.parse(localStorage.getItem('users') || '[]');
+    console.log('Users loaded:', users);
 
     if (isLoginMode) {
         // Login logic
@@ -253,21 +256,25 @@ authForm.addEventListener('submit', (e) => {
             user = existingUser;
             localStorage.setItem('currentUser', JSON.stringify(user));
             authMessage.textContent = '';
+            console.log('Login successful for user:', username);
             showTypingTestSection();
         } else {
             authMessage.textContent = 'Invalid username or password.';
+            console.log('Invalid login attempt for user:', username);
         }
     } else {
         // Registration logic
         const userExists = users.some(u => u.username === username);
         if (userExists) {
             authMessage.textContent = 'Username already exists.';
+            console.log('Registration failed: username exists:', username);
             return;
         }
         const newUser = { username, password };
         users.push(newUser);
         localStorage.setItem('users', JSON.stringify(users));
         authMessage.textContent = 'Registration successful. Please login.';
+        console.log('Registration successful for user:', username);
         switchMode(true);
     }
 });
