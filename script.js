@@ -232,7 +232,67 @@ function handleAuthSubmit(e) {
     }
 }
 
-// Event Listeners
+let pauseTestBtn = document.getElementById('pause-test');
+let isPaused = false;
+let pauseStartTime = null;
+let pauseElapsed = 0;
+
+function showSuccessMessage(message) {
+    authMessage.textContent = message;
+    authMessage.style.color = 'green';
+}
+
+function pauseTest() {
+    if (!testStarted) return;
+    if (!isPaused) {
+        // Pause the test
+        isPaused = true;
+        pauseTestBtn.textContent = 'Resume';
+        inputArea.disabled = true;
+        clearInterval(intervalId);
+        pauseStartTime = Date.now();
+    } else {
+        // Resume the test
+        isPaused = false;
+        pauseTestBtn.textContent = 'Pause';
+        inputArea.disabled = false;
+        // Adjust timeLeft based on pause duration
+        pauseElapsed += (Date.now() - pauseStartTime) / 1000;
+        intervalId = setInterval(() => {
+            updateTimer();
+            highlightText();
+            wpmDisplay.textContent = `WPM: ${calculateWPM()}`;
+        }, 1000);
+    }
+}
+
+function loginUser(username, password) {
+    if (validateUser(username, password)) {
+        user = { username };
+        showSuccessMessage('Successfully logged in!');
+        setTimeout(() => {
+            authSection.classList.add('hidden');
+            typingTestSection.classList.remove('hidden');
+            loadTheme();
+            loadLeaderboard();
+        }, 1000);
+    } else {
+        showAuthMessage('Invalid username or password.');
+    }
+}
+
+function registerUser(username, password) {
+    let users = JSON.parse(localStorage.getItem('users') || '{}');
+    if (users[username]) {
+        showAuthMessage('Username already exists.');
+        return;
+    }
+    saveUser(username, password);
+    showSuccessMessage('Successfully registered! You can now login.');
+    switchMode(true);
+}
+
+pauseTestBtn.addEventListener('click', pauseTest);
 loginTab.addEventListener('click', () => switchMode(true));
 registerTab.addEventListener('click', () => switchMode(false));
 authForm.addEventListener('submit', handleAuthSubmit);
